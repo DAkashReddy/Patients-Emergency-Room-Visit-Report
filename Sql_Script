@@ -1,0 +1,57 @@
+-- Average Wait Time
+SELECT AVG(patient_waittime) AS avg_wait_time
+FROM hospital_er;
+
+-- Patient Satisfaction
+SELECT AVG(patient_sat_score) AS avg_satisfaction_score
+FROM hospital_er
+WHERE patient_sat_score IS NOT NULL;
+
+-- Total Patient Visits Monthly
+SELECT
+  FORMAT(CONVERT(date, date), 'MM-yyyy') AS month_year,
+  COUNT(*) AS total_visits
+FROM hospital_er
+GROUP BY FORMAT(CONVERT(date, date), 'MM-yyyy')
+ORDER BY month_year;
+
+-- Administrative vs. Non-Administrative Appointments
+SELECT
+  patient_admin_flag,
+  COUNT(*) AS appointment_count
+FROM hospital_er
+GROUP BY patient_admin_flag;
+
+-- Referrals and Walk-In Patients
+SELECT
+  CASE 
+    WHEN department_referral IS NOT NULL THEN 'Referred'
+    ELSE 'Walk-In'
+  END AS referral_type,
+  COUNT(*) AS type_count
+FROM hospital_er
+GROUP BY 
+  CASE 
+    WHEN department_referral IS NOT NULL THEN 'Referred'
+    ELSE 'Walk-In'
+  END;
+
+-- Patient Visits by Age Group and Race
+SELECT
+  CASE 
+    WHEN patient_age BETWEEN 0 AND 10 THEN '0-10'
+    WHEN patient_age BETWEEN 11 AND 20 THEN '11-20'
+    -- Add more age ranges as necessary
+    ELSE '70+'
+  END AS age_group,
+  patient_race,
+  COUNT(*) AS visits_count
+FROM hospital_er
+GROUP BY 
+  CASE 
+    WHEN patient_age BETWEEN 0 AND 10 THEN '0-10'
+    WHEN patient_age BETWEEN 11 AND 20 THEN '11-20'
+    -- Add more age ranges as necessary
+    ELSE '70+'
+  END,
+  patient_race;
